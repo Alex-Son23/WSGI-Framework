@@ -12,7 +12,7 @@ class BaseMiddleware:
         return
 
 
-class Session:
+class Session(BaseMiddleware):
 
     def to_request(self, request: Request):
         cookie = request.environ.get('HTTP_COOKIE', None)
@@ -22,6 +22,7 @@ class Session:
         request.extra['session_id'] = session_id
 
     def to_response(self, response: Response):
+
         if not response.request.session_id:
             response.update_headers(
                 {"Set-Cookie": f"session_id={uuid4()}"}

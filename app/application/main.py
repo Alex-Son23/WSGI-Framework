@@ -30,14 +30,13 @@ class Application:
         self._apply_middleware_to_request(request)
         response = self._get_response(environ, view, request)
         self._apply_middleware_to_response(response)
-        # pprint(environ)
-        # raw_url = environ['PATH_INFO']
-        # view = self._find_view(raw_url)()
-        # method = environ['REQUEST_METHOD'].lower()
-        # if not hasattr(view, method):
-        #     raise NotAllow
-        # raw_response = getattr(view, method)(None)
-        start_response(str(response.status_code), response.headers.items())
+        if environ['REQUEST_METHOD'] == 'GET':
+            print(f'GET запрос:{request.GET}')
+        elif environ['REQUEST_METHOD'] == 'POST':
+            print(f'POST запрос:{request.POST}')
+
+        print(str(response.status_code), list(response.headers.items()))
+        start_response(str(response.status_code), list(response.headers.items()))
         # '200 OK', [('Content-Type', 'text/html')]
         return iter([response.body])
 

@@ -3,8 +3,10 @@ import re
 
 from application.request import Request
 
-FOR_BLOCK_PATTERN = re.compile(r'{% for (?P<variable>[a-zA-Z]+) in (?P<seq>[a-zA-Z]+) %}(?P<content>[\S\s]+)(?={% endblock %}){% endblock %}')
+FOR_BLOCK_PATTERN = re.compile(
+    r'{% for (?P<variable>[a-zA-Z]+) in (?P<seq>[a-zA-Z]+) %}(?P<content>[\S\s]+)(?={% endblock %}){% endblock %}')
 VARIABLE_PATTERN = re.compile(r'{{ (?P<variable>[a-zA-Z_]+) }}')
+
 
 class Engine:
     def __init__(self, base_dir: str, template_dir: str):
@@ -24,6 +26,7 @@ class Engine:
 
         for var in used_vars:
             var_in_template = '{{ %s }}' % var
+            print(var, var_in_template)
             raw_template_block = re.sub(var_in_template, str(context.get(var, '')), raw_template_block)
         return raw_template_block
 
@@ -34,7 +37,7 @@ class Engine:
         build_for_block = ''
         for i in context.get(for_block.group('seq'), []):
             build_for_block += self._build_block(
-                {**context, for_block.group('variable') : i},
+                {**context, for_block.group('variable'): i},
                 for_block.group('content')
             )
         return FOR_BLOCK_PATTERN.sub(build_for_block, raw_template)
@@ -44,7 +47,8 @@ class Engine:
         raw_template = self._build_for_block(context, raw_template)
         return self._build_block(context, raw_template)
 
-def build_template(request:Request, context: dict, template_name: str) -> str:
+
+def build_template(request: Request, context: dict, template_name: str) -> str:
     engine = Engine(
         request.settings.get('BASE_DIR'),
         request.settings.get('TEMPLATES_DIR_NAME')

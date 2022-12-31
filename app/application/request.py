@@ -16,7 +16,9 @@ class Request:
 
     def build_get_params_dict(self, raw_params: str):
         self.GET = parse_qs(raw_params)
+        # print(self.GET)
 
     def build_post_params_dict(self, raw_bytes: bytes):
         raw_params = raw_bytes.decode('utf-8')
         self.POST = parse_qs(raw_params)
+        # print(self.POST)
