@@ -9,8 +9,8 @@ settings = {
 }
 
 app = Application(
-    urls  = urlpatterns,
-    settings =  settings,
+    urls=urlpatterns,
+    settings=settings,
     middlewares=middlewares
 )
 

@@ -31,11 +31,11 @@ class Application:
         response = self._get_response(environ, view, request)
         self._apply_middleware_to_response(response)
         if environ['REQUEST_METHOD'] == 'GET':
-            print(f'GET запрос:{request.GET}')
+            print(f'\nGET запрос:{request.GET}')
         elif environ['REQUEST_METHOD'] == 'POST':
-            print(f'POST запрос:{request.POST}')
+            print(f'\nPOST запрос:{request.POST}')
 
-        print(str(response.status_code), list(response.headers.items()))
+        print(str(response.status_code), list(response.headers.items()), '\n')
         start_response(str(response.status_code), list(response.headers.items()))
         # '200 OK', [('Content-Type', 'text/html')]
         return iter([response.body])
@@ -74,3 +74,26 @@ class Application:
         if not hasattr(view, method):
             raise NotAllow
         return getattr(view, method)(request)
+
+
+class DebugApplication(Application):
+
+    def __init__(self, urls: List[Url], settings: dict, middlewares: List[Type[BaseMiddleware]]):
+        self.application = Application(urls, settings, middlewares)
+        super().__init__(urls, settings, middlewares)
+
+    def __call__(self, environ, start_response):
+        print('Debug Application')
+        print(environ)
+        return self.application(environ, start_response)
+
+
+class FakeApplication(Application):
+
+    def __init__(self, urls: List[Url], settings: dict, middlewares: List[Type[BaseMiddleware]]):
+        self.application = Application(urls, settings, middlewares)
+        super().__init__(urls, settings, middlewares)
+
+    def __call__(self, environ, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'Hello from FAKE']
